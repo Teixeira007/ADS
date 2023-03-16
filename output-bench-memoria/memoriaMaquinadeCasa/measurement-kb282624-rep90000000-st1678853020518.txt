@@ -1,0 +1,2 @@
+KBinMemory	ArraySize	SearchRepetitions	StartTime	PopulateTime	SearchTime	TotalTime
+282624	36175872	90000000	1678853020518	704	7222	7926
