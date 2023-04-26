@@ -1,0 +1,47 @@
+---
+title: "Exemplos de teoria das filas"
+output: html_notebook
+---
+
+```{r setup}
+# Para instalar os pacotes, execute:
+# install.packages("dplyr", "ggplot2", "purrr", "queueing")
+library(dplyr)
+library(ggplot2)
+library(purrr)
+library(queueing)
+```
+
+
+
+
+
+
+# M/M/m
+
+
+```{r}
+
+taxa_de_chegada <-  seq(1, 11, 0.5) # r/s
+taxa_de_servico <- 1.19 # s
+n_servidores <- 10
+tempo_resposta <- list()
+for (taxa in taxa_de_chegada) {
+  mmc_input <- NewInput.MMC(taxa, taxa_de_servico, n_servidores)
+  mmc_model <- QueueingModel(mmc_input)
+  tempo_resposta[[as.character(taxa)]] <- mmc_model$W
+  print(paste("Taxa de chegada: ", taxa))
+  print(paste("Tempo de resposta: ", mmc_model$W))
+}
+# criar data frame com valores de taxa de chegada e tempo de resposta
+data <- data.frame(taxa_de_chegada = taxa_de_chegada,
+                   tempo_de_resposta = unlist(tempo_resposta))
+# criar gráfico de linha
+ggplot(data, aes(x = taxa_de_chegada, y = tempo_de_resposta)) +
+  geom_line() +
+  xlab("Taxa de chegada (r/s)") +
+  ylab("Tempo de resposta (s)") +
+  ggtitle("Evolução do tempo de resposta com o aumento da taxa de chegada")
+
+```
+
