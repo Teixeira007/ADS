@@ -45,3 +45,28 @@ ggplot(data, aes(x = taxa_de_chegada, y = tempo_de_resposta)) +
 
 ```
 
+
+```{r}
+taxa_de_chegada <-  9.5 # r/s
+taxa_de_servico <- 1.19 # s
+n_servidores <- seq(8, 50, 1)
+tempo_resposta <- list()
+for (servidor in n_servidores) {
+  mmc_input <- NewInput.MMC(taxa_de_chegada, taxa_de_servico, servidor)
+  mmc_model <- QueueingModel(mmc_input)
+  tempo_resposta[[as.character(servidor)]] <- mmc_model$W
+  print(paste("Número de servidor: ", servidor))
+  print(paste("Tempo de resposta: ", mmc_model$W))
+}
+# criar data frame com valores de taxa de chegada e tempo de resposta
+data <- data.frame(n_servidores = n_servidores,
+                   tempo_de_resposta = unlist(tempo_resposta))
+# criar gráfico de linha
+ggplot(data, aes(x = n_servidores, y = tempo_de_resposta)) +
+  geom_line() +
+  xlab("Número de Servidores )") +
+  ylab("Tempo de resposta (s)") +
+  ggtitle("Evolução do tempo de resposta com o aumento do número de servidores")
+
+```
+
