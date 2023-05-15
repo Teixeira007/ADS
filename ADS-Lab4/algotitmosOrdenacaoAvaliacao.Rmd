@@ -1,0 +1,66 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+---
+
+# Instale os pacotes: install.packages("dplyr", "ggplot2")
+```{r setup}
+library(dplyr)
+library(ggplot2)
+```
+
+```{r}
+z_f <- function(confianca) {
+  qnorm(1 - (1 - confianca)/2)
+}
+
+n_f <- function(z, desvio_padrao, margem_erro, media) {
+  ((100 * z * desvio_padrao) / (margem_erro * media))^2
+}
+
+ic_erro_f <- function(z, desvio_padrao, tamanho_amostra) {
+  z * (desvio_padrao / sqrt(tamanho_amostra))
+}
+```
+
+```{r}
+arquivos <- c("quick_30.txt_filt", "merge_30.txt_filt", "counting_30.txt_filt")
+
+dados <- data.frame()
+for (arquivo in arquivos) {
+  dados <- rbind(dados, data.frame(arquivo, ping = read.table(arquivo)[,1]))
+}
+```
+
+```{r}
+dados %>%
+  group_by(arquivo) %>%
+  summarise(media_ping = mean(ping))
+
+ggplot(dados, aes(x = arquivo, y = ping, col = arquivo)) +
+  geom_jitter(height = 0)
+```
+
+
+```{r}
+res <- dados %>%
+       group_by(arquivo) %>%
+       summarise(media = mean(ping),
+                 desvio_padrao = sd(ping),
+                 tamanho_amostra = n(),
+                 z = z_f(.95),
+                 ic_erro = ic_erro_f(z, desvio_padrao, tamanho_amostra),
+                 ic_menor = media - ic_erro,
+                 ic_maior = media + ic_erro,
+                 n_ideal = n_f(z, desvio_padrao, margem_erro = 10, media))
+res
+
+ggplot(res, aes(x = arquivo, y = media)) +
+  geom_errorbar(aes(ymin = ic_menor, ymax = ic_maior)) +
+  geom_point()
+```
+
+
+
