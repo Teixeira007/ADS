@@ -26,20 +26,20 @@ ic_erro_f <- function(z, desvio_padrao, tamanho_amostra) {
 ```
 
 ```{r}
-arquivos <- c("quick_30.txt_filt", "merge_30.txt_filt", "counting_30.txt_filt")
+arquivos <- c("quick_193_80M.txt_filt", "merge_45_80M.txt_filt", "counting_45_80M.txt_filt")
 
 dados <- data.frame()
 for (arquivo in arquivos) {
-  dados <- rbind(dados, data.frame(arquivo, ping = read.table(arquivo)[,1]))
+  dados <- rbind(dados, data.frame(arquivo, time = read.table(arquivo)[,1]))
 }
 ```
 
 ```{r}
 dados %>%
   group_by(arquivo) %>%
-  summarise(media_ping = mean(ping))
+  summarise(media_ping = mean(time))
 
-ggplot(dados, aes(x = arquivo, y = ping, col = arquivo)) +
+ggplot(dados, aes(x = arquivo, y = time, col = arquivo)) +
   geom_jitter(height = 0)
 ```
 
@@ -47,14 +47,14 @@ ggplot(dados, aes(x = arquivo, y = ping, col = arquivo)) +
 ```{r}
 res <- dados %>%
        group_by(arquivo) %>%
-       summarise(media = mean(ping),
-                 desvio_padrao = sd(ping),
+       summarise(media = mean(time),
+                 desvio_padrao = sd(time),
                  tamanho_amostra = n(),
                  z = z_f(.95),
                  ic_erro = ic_erro_f(z, desvio_padrao, tamanho_amostra),
                  ic_menor = media - ic_erro,
                  ic_maior = media + ic_erro,
-                 n_ideal = n_f(z, desvio_padrao, margem_erro = 10, media))
+                 n_ideal = n_f(z, desvio_padrao, margem_erro = time, media))
 res
 
 ggplot(res, aes(x = arquivo, y = media)) +
