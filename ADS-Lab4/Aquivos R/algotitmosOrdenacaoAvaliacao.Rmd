@@ -26,7 +26,7 @@ ic_erro_f <- function(z, desvio_padrao, tamanho_amostra) {
 ```
 
 ```{r}
-arquivos <- c("quick_193_80M.txt_filt", "merge_45_80M.txt_filt", "counting_45_80M.txt_filt")
+arquivos <- c("quick_80M.txt_filt", "merge_80M.txt_filt", "counting_80M.txt_filt")
 
 dados <- data.frame()
 for (arquivo in arquivos) {
