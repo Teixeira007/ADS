@@ -1,0 +1,171 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+---
+
+# Instale os pacotes: install.packages("dplyr", "ggplot2")
+```{r setup}
+library(ggplot2)
+
+```
+
+```{r}
+numeroSessao <- 5
+
+```
+
+```{r}
+yH <- 1 * numeroSessao
+
+vs <-  1.75 * numeroSessao
+
+va <- 0.725 * numeroSessao
+
+vp <- 0.29 * numeroSessao
+```
+
+```{r}
+# Utilizações da CPU
+functions_cpu <- c('h', 's', 'a', 'p')
+cpuH <- yH * 0.02
+cpuS <- vs * 0.03
+cpuA <- va * 0.02
+cpuP <- vp * 0.04
+utilization_cpu <- c(cpuH, cpuS, cpuA, cpuP)
+
+# Gráfico de utilização da CPU
+cpu_plot <- ggplot(data.frame(functions_cpu, utilization_cpu), aes(x = functions_cpu, y = utilization_cpu)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  labs(x = "Função", y = "Utilização da CPU", title = "Utilização da CPU para cada função do e-commerce")
+print(cpu_plot)
+
+```
+
+```{r}
+# Utilizações do disco
+functions_disk <- c('h', 's', 'a', 'p')
+dH <- yH * 0.03
+dS <- vs * 0.05
+dA <- va * 0.03
+dP <- vp * 0.02
+utilization_disk <- c(dH, dS, dA, dP)
+
+# Gráfico de utilização do disco
+disk_plot <- ggplot(data.frame(functions_disk, utilization_disk), aes(x = functions_disk, y = utilization_disk)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  labs(x = "Função", y = "Utilização do disco", title = "Utilização do disco para cada função do e-commerce")
+
+print(disk_plot)
+
+```
+
+```{r}
+RcpuH <- 0.02 / (1- dH)
+RcpuS <- 0.03 / (1- dS)
+RcpuA <- 0.02 / (1- dA)
+RcpuP <- 0.04 / (1- dP)
+
+residence_time_cpu <- c(RcpuH, RcpuS, RcpuA, RcpuP)
+```
+
+```{r}
+cpu_plot <- ggplot(data.frame(functions_cpu, residence_time_cpu), aes(x = functions_cpu, y = residence_time_cpu)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  labs(x = "Função", y = "Tempo de residência (s)", title = "Tempo de residência na CPU para cada função do e-commerce")
+
+print(cpu_plot)
+```
+
+```{r}
+RdiscoH <- 0.03 / (1- dH)
+RdiscoS <- 0.05 / (1- dS)
+RdiscoA <- 0.03 / (1- dA)
+RdiscoP <- 0.02 / (1- dP)
+
+residence_time_disk <- c(RdiscoH, RdiscoS, RdiscoA, RdiscoP)
+
+```
+
+```{r}
+# Gráfico de tempo de residência no disco
+disk_plot <- ggplot(data.frame(functions_disk, residence_time_disk), aes(x = functions_disk, y = residence_time_disk)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  labs(x = "Função", y = "Tempo de residência (s)", title = "Tempo de residência no disco para cada função do e-commerce")
+
+print(disk_plot)
+\
+```
+
+```{r}
+rH <- RcpuH + RdiscoH
+rS <- RcpuS + RdiscoS
+rA <- RcpuA + RdiscoA
+rP <- RcpuP + RdiscoP
+
+response_time <- c(rH, rS, rA, rP)
+cat("Tempo de resposta para a função h:", rH, "s\n")
+cat("Tempo de resposta para a função s:", rS, "s\n")
+cat("Tempo de resposta para a função a:", rA, "s\n")
+cat("Tempo de resposta para a função p:", rP, "s\n")
+```
+```{r}
+# Gráfico de tempo de resposta
+response_plot <- ggplot(data.frame(functions, response_time), aes(x = functions, y = response_time)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  labs(x = "Função", y = "Tempo de resposta (s)", title = "Tempo de resposta para cada função do e-commerce")
+
+print(response_plot)
+```
+
+
+```{r}
+# Número de sessões iniciadas por segundo
+sessions <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
+
+```
+```{r}
+# Tempos de resposta para cada função do e-commerce
+response_h <- c(0.05154, 0.05319, 0.05494, 0.0568, 0.0588, 0.1517, 0.1770, 0.0657, 0.0684, 0.0714, 0.07037)
+response_s <- c(0.08767, 0.0969, 0.1084, 0.1230, 0.1422, 0.4271, 0.4983, 0.2666, 0.3764, 0.64, 1.4043)
+response_a <- c(0.05111, 0.0522, 0.0534, 0.0547, 0.05610, 0.3757, 0.4382, 0.0605, 0.0621, 0.0638,  0.0631)
+response_p <- c(0.06035, 0.0607, 0.0610, 0.0614, 0.0617, 0.4034, 0.4707, 0.06291, 0.06330, 0.0636, 0.0671)
+```
+```{r}
+# Criação do gráfico de linha para cada função
+h_plot <- ggplot(data.frame(sessions, response_h), aes(x = sessions, y = response_h)) +
+  geom_line() +
+  geom_point() +
+  labs(x = "Sessões iniciadas por segundo", y = "Tempo de resposta (s)", title = "Tempo de resposta para a função h") +
+  theme_minimal() +
+  ylim(0, max(response_h) * 1.2)  # Ajuste os limites do eixo y conforme necessário
+
+s_plot <- ggplot(data.frame(sessions, response_s), aes(x = sessions, y = response_s)) +
+  geom_line() +
+  geom_point() +
+  labs(x = "Sessões iniciadas por segundo", y = "Tempo de resposta (s)", title = "Tempo de resposta para a função s") +
+  theme_minimal() +
+  ylim(0, max(response_s) * 1.2)
+
+a_plot <- ggplot(data.frame(sessions, response_a), aes(x = sessions, y = response_a)) +
+  geom_line() +
+  geom_point() +
+  labs(x = "Sessões iniciadas por segundo", y = "Tempo de resposta (s)", title = "Tempo de resposta para a função a") +
+  theme_minimal() +
+  ylim(0, max(response_a) * 1.2)
+
+p_plot <- ggplot(data.frame(sessions, response_p), aes(x = sessions, y = response_p)) +
+  geom_line() +
+  geom_point() +
+  labs(x = "Sessões iniciadas por segundo", y = "Tempo de resposta (s)", title = "Tempo de resposta para a função p") +
+  theme_minimal() +
+  ylim(0, max(response_p) * 1.2)
+
+# Exibir os gráficos separadamente
+print(h_plot)
+print(s_plot)
+print(a_plot)
+print(p_plot)
+
+```
